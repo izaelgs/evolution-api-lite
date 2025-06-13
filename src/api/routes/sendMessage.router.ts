@@ -1,6 +1,7 @@
 import { RouterBroker } from '@api/abstract/abstract.router';
 import {
   SendAudioDto,
+  SendBillingDto,
   SendButtonsDto,
   SendContactDto,
   SendListDto,
@@ -13,10 +14,12 @@ import {
   SendStickerDto,
   SendTemplateDto,
   SendTextDto,
+  SendWelcomeDto,
 } from '@api/dto/sendMessage.dto';
 import { sendMessageController } from '@api/server.module';
 import {
   audioMessageSchema,
+  billingMessageSchema,
   buttonsMessageSchema,
   contactMessageSchema,
   listMessageSchema,
@@ -29,6 +32,7 @@ import {
   stickerMessageSchema,
   templateMessageSchema,
   textMessageSchema,
+  welcomeMessageSchema,
 } from '@validate/validate.schema';
 import { RequestHandler, Router } from 'express';
 import multer from 'multer';
@@ -57,6 +61,26 @@ export class MessageRouter extends RouterBroker {
           schema: textMessageSchema,
           ClassRef: SendTextDto,
           execute: (instance, data) => sendMessageController.sendText(instance, data),
+        });
+
+        return res.status(HttpStatus.CREATED).json(response);
+      })
+      .post(this.routerPath('sendWelcomeMessage'), ...guards, async (req, res) => {
+        const response = await this.dataValidate<SendWelcomeDto>({
+          request: req,
+          schema: welcomeMessageSchema,
+          ClassRef: SendWelcomeDto,
+          execute: (instance, data) => sendMessageController.sendWelcomeMessage(instance, data),
+        });
+
+        return res.status(HttpStatus.CREATED).json(response);
+      })
+      .post(this.routerPath('sendBillingMessage'), ...guards, async (req, res) => {
+        const response = await this.dataValidate<SendBillingDto>({
+          request: req,
+          schema: billingMessageSchema,
+          ClassRef: SendBillingDto,
+          execute: (instance, data) => sendMessageController.sendBillingMessage(instance, data),
         });
 
         return res.status(HttpStatus.CREATED).json(response);

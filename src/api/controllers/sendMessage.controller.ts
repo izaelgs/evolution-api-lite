@@ -1,6 +1,7 @@
 import { InstanceDto } from '@api/dto/instance.dto';
 import {
   SendAudioDto,
+  SendBillingDto,
   SendButtonsDto,
   SendContactDto,
   SendListDto,
@@ -13,6 +14,7 @@ import {
   SendStickerDto,
   SendTemplateDto,
   SendTextDto,
+  SendWelcomeDto,
 } from '@api/dto/sendMessage.dto';
 import { WAMonitoringService } from '@api/services/monitor.service';
 import { BadRequestException } from '@exceptions';
@@ -27,6 +29,14 @@ export class SendMessageController {
 
   public async sendText({ instanceName }: InstanceDto, data: SendTextDto) {
     return await this.waMonitor.waInstances[instanceName].textMessage(data);
+  }
+
+  public async sendWelcomeMessage({ instanceName }: InstanceDto, data: SendWelcomeDto) {
+    return await this.waMonitor.waInstances[instanceName].welcomeMessage(data);
+  }
+
+  public async sendBillingMessage({ instanceName }: InstanceDto, data: SendBillingDto) {
+    return await this.waMonitor.waInstances[instanceName].billingMessage(data);
   }
 
   public async sendMedia({ instanceName }: InstanceDto, data: SendMediaDto, file?: any) {

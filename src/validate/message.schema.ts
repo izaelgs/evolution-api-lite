@@ -92,6 +92,58 @@ export const textMessageSchema: JSONSchema7 = {
   required: ['number', 'text'],
 };
 
+export const welcomeMessageSchema: JSONSchema7 = {
+  $id: v4(),
+  type: 'object',
+  properties: {
+    phone: { ...numberDefinition },
+    firstName: { type: 'string' },
+    delay: {
+      type: 'integer',
+      description: 'Enter a value in milliseconds',
+    },
+    quoted: { ...quotedOptionsSchema },
+    everyOne: { type: 'boolean', enum: [true, false] },
+    mentioned: {
+      type: 'array',
+      minItems: 1,
+      uniqueItems: true,
+      items: {
+        type: 'string',
+        pattern: '^\\d+',
+        description: '"mentioned" must be an array of numeric strings',
+      },
+    },
+  },
+  required: ['phone', 'firstName'],
+};
+
+export const billingMessageSchema: JSONSchema7 = {
+  $id: v4(),
+  type: 'object',
+  properties: {
+    phone: { ...numberDefinition },
+    firstName: { type: 'string' },
+    delay: {
+      type: 'integer',
+      description: 'Enter a value in milliseconds',
+    },
+    quoted: { ...quotedOptionsSchema },
+    everyOne: { type: 'boolean', enum: [true, false] },
+    mentioned: {
+      type: 'array',
+      minItems: 1,
+      uniqueItems: true,
+      items: {
+        type: 'string',
+        pattern: '^\\d+',
+        description: '"mentioned" must be an array of numeric strings',
+      },
+    },
+  },
+  required: ['phone', 'firstName'],
+};
+
 export const mediaMessageSchema: JSONSchema7 = {
   $id: v4(),
   type: 'object',

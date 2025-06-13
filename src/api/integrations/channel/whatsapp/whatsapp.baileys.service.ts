@@ -37,6 +37,7 @@ import {
   MediaMessage,
   Options,
   SendAudioDto,
+  SendBillingDto,
   SendButtonsDto,
   SendContactDto,
   SendListDto,
@@ -48,6 +49,7 @@ import {
   SendStatusDto,
   SendStickerDto,
   SendTextDto,
+  SendWelcomeDto,
   StatusMessage,
   TypeButton,
 } from '@api/dto/sendMessage.dto';
@@ -70,6 +72,7 @@ import {
   QrCode,
   S3,
 } from '@config/env.config';
+import { MESSAGE_TEMPLATES } from '@config/message-templates';
 import { BadRequestException, InternalServerErrorException, NotFoundException } from '@exceptions';
 import { Boom } from '@hapi/boom';
 import { createId as cuid } from '@paralleldrive/cuid2';
@@ -2035,6 +2038,7 @@ export class BaileysStartupService extends ChannelStartupService {
 
   // Send Message Controller
   public async textMessage(data: SendTextDto) {
+    this.logger.log('textMessage');
     const text = data.text;
 
     if (!text || text.trim().length === 0) {
@@ -2053,6 +2057,91 @@ export class BaileysStartupService extends ChannelStartupService {
         linkPreview: data?.linkPreview,
         mentionsEveryOne: data?.mentionsEveryOne,
         mentioned: data?.mentioned,
+      },
+    );
+  }
+
+  // Send Welcome Message Controller
+  public async welcomeMessage(data: SendWelcomeDto) {
+    const template = MESSAGE_TEMPLATES.welcome;
+    const text = template.text.replace('{{name}}', data.firstName || '');
+
+    if (!text || text.trim().length === 0) {
+      throw new BadRequestException('Text is required');
+    }
+
+    if (!data.firstName || data.firstName.trim().length === 0) {
+      throw new BadRequestException('First name is required');
+    }
+
+    if (!data.phone || data.phone.trim().length === 0) {
+      throw new BadRequestException('phone is required');
+    }
+
+    const videoBuffer = template.video ? readFileSync(template.video) : null;
+
+    const mediaData: MediaMessage = {
+      mediatype: 'video',
+      media: '',
+      caption: text,
+    };
+
+    if (videoBuffer) mediaData.media = videoBuffer.toString('base64');
+
+    const generate = await this.prepareMediaMessage(mediaData);
+
+    return await this.sendMessageWithTyping(
+      data.phone,
+      { ...generate.message },
+      {
+        presence: 'composing',
+      },
+    );
+
+    /**
+     * 1️⃣ Envia o vídeo de boas-vindas com a legenda completa
+     * A legenda já traz todo o texto personalizado, preservando
+     * formatação (negrito, emojis, quebras de linha, etc.).
+     * Se preferir dividir em dois envios (vídeo + texto separado),
+     * basta remover o `caption` e disparar um segundo
+     * `sendMessageWithTyping` com `conversation: text`.
+     */
+    // return await this.sendMessageWithTyping(
+    //   data.phone,
+    //   {
+    //     video: videoBuffer,
+    //     conversation: text, // legenda com o texto formatado
+    //   },
+    //   {
+    //     presence: 'composing',
+    //   },
+    // );
+  }
+
+  // Send Billing Message Controller
+  public async billingMessage(data: SendBillingDto) {
+    const template = MESSAGE_TEMPLATES.billing;
+    const text = template.text.replace('{{name}}', data.firstName || '');
+
+    if (!text || text.trim().length === 0) {
+      throw new BadRequestException('Text is required');
+    }
+
+    if (!data.firstName || data.firstName.trim().length === 0) {
+      throw new BadRequestException('First name is required');
+    }
+
+    if (!data.phone || data.phone.trim().length === 0) {
+      throw new BadRequestException('phone is required');
+    }
+
+    return await this.sendMessageWithTyping(
+      data.phone,
+      {
+        conversation: text,
+      },
+      {
+        presence: 'composing',
       },
     );
   }

@@ -12,7 +12,7 @@ This is a Docker-based setup for Evolution API Lite, which includes Redis and Po
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone git@github.com:izaelgs/evolution-api-lite.git
 cd evolution-api-lite
 ```
 
@@ -28,6 +28,9 @@ CACHE_REDIS_SAVE_INSTANCES=false
 # Database Configuration
 DATABASE_PROVIDER=postgresql
 DATABASE_CONNECTION_URI='postgresql://user:pass@postgres:5432/evolution?schema=public'
+
+# Latest Whatsapp Web release (open web.whatsapp -> click on settings -> click on help section)
+CONFIG_SESSION_PHONE_VERSION=2.3000.1023826371
 ```
 
 3. Start the services:

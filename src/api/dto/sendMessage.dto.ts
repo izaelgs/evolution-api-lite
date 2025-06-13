@@ -49,6 +49,16 @@ export class Metadata {
 export class SendTextDto extends Metadata {
   text: string;
 }
+
+export class SendWelcomeDto {
+  phone: string;
+  firstName: string;
+}
+
+export class SendBillingDto {
+  phone: string;
+  firstName: string;
+}
 export class SendPresence extends Metadata {
   text: string;
 }
