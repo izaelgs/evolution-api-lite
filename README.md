@@ -1,3 +1,124 @@
+# Evolution API Lite
+
+This is a Docker-based setup for Evolution API Lite, which includes Redis and PostgreSQL services.
+
+## Prerequisites
+
+- Docker
+- Docker Compose
+- Git
+
+## Getting Started
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd evolution-api-lite
+```
+
+2. Create a `.env` file in the root directory with the following required variables:
+```env
+# Redis Configuration
+CACHE_REDIS_ENABLED=true
+CACHE_REDIS_URI=redis://localhost:6379
+CACHE_REDIS_TTL=604800
+CACHE_REDIS_PREFIX_KEY=evolution
+CACHE_REDIS_SAVE_INSTANCES=false
+
+# Database Configuration
+DATABASE_PROVIDER=postgresql
+DATABASE_CONNECTION_URI='postgresql://user:pass@postgres:5432/evolution?schema=public'
+```
+
+3. Start the services:
+```bash
+docker-compose up -d
+```
+
+This will start:
+- Evolution API on port 8080
+- Redis on port 6379
+- PostgreSQL on port 5432
+
+## Service Information
+
+### Evolution API
+- Port: 8080
+- Container Name: evolution_api
+- Access: http://localhost:8080
+
+### Redis
+- Port: 6379
+- Container Name: redis
+- Persistence: Enabled (appendonly yes)
+- Data Volume: evolution_redis
+
+### PostgreSQL
+- Port: 5432
+- Container Name: postgres
+- Database: evolution
+- Username: user
+- Password: pass
+
+## Useful Commands
+
+- View logs:
+```bash
+docker-compose logs -f
+```
+
+- View specific service logs:
+```bash
+docker-compose logs -f api    # For API logs
+docker-compose logs -f redis  # For Redis logs
+docker-compose logs -f postgres # For PostgreSQL logs
+```
+
+- Stop all services:
+```bash
+docker-compose down
+```
+
+- Restart all services:
+```bash
+docker-compose restart
+```
+
+## Troubleshooting
+
+1. If Redis connection issues occur:
+   - Check if Redis container is running: `docker ps`
+   - Verify Redis logs: `docker-compose logs redis`
+   - Ensure CACHE_REDIS_URI is correctly set in .env
+
+2. If Database connection issues occur:
+   - Check if PostgreSQL container is running: `docker ps`
+   - Verify PostgreSQL logs: `docker-compose logs postgres`
+   - Ensure DATABASE_URL is correctly set in .env
+
+3. If API issues occur:
+   - Check API logs: `docker-compose logs api`
+   - Verify all environment variables are set correctly
+   - Ensure all services are running: `docker-compose ps`
+
+## Development
+
+For development purposes, you can use the development configuration:
+```bash
+docker-compose -f docker-compose.dev.yaml up -d
+```
+
+## Volumes
+
+The following volumes are created:
+- evolution_instances: For API instance data
+- evolution_redis: For Redis data persistence
+- postgres_data: For PostgreSQL data persistence
+
+## Networks
+
+A bridge network named `evolution-net` is created for inter-service communication.
+
 <h1 align="center">Evolution API Lite</h1>
 
 <div align="center">
